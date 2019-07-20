@@ -12,12 +12,7 @@ trait Day01 {
 }
 
 object Day01 {
-  def changes(source: String): Seq[Int] =
-    Source
-      .fromResource(source)
-      .getLines()
-      .map{_.toInt}
-      .toSeq
+  def changes(source: String): Seq[Int] = readLines(source).map{_.toInt}
 
   def frequency(cs: Seq[Int]): Int = cs.sum
 }
