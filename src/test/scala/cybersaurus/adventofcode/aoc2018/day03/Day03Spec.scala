@@ -1,6 +1,7 @@
-package cybersaurus.adventofcode.aoc2018
+package cybersaurus.adventofcode.aoc2018.day03
 
-import cybersaurus.adventofcode.aoc2018.domain.Claim
+import cybersaurus.adventofcode.Input.readLines
+import cybersaurus.adventofcode.aoc2018.day03.domain.Claim
 import org.scalatest.{Matchers, WordSpec}
 
 class Day03Spec extends WordSpec with Matchers {

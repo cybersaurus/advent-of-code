@@ -1,7 +1,8 @@
-package cybersaurus.adventofcode.aoc2018
+package cybersaurus.adventofcode.aoc2018.day01
+
+import cybersaurus.adventofcode.Input.readLines
 
 import scala.annotation.tailrec
-import scala.io.Source
 
 trait Day01 {
 

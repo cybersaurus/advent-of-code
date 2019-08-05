@@ -1,4 +1,4 @@
-package cybersaurus.adventofcode.aoc2018
+package cybersaurus.adventofcode.aoc2018.day02
 
 class Day02 {
 

@@ -1,7 +1,8 @@
-package cybersaurus.adventofcode.aoc2018
+package cybersaurus.adventofcode.aoc2018.day04
 
 import java.time.LocalDateTime
 
+import cybersaurus.adventofcode.Input.readLines
 import org.scalatest.{Matchers, WordSpec}
 
 

@@ -1,8 +1,8 @@
-package cybersaurus.adventofcode.aoc2018
+package cybersaurus.adventofcode.aoc2018.day02
+
+import cybersaurus.adventofcode.Input.readLines
 
 import org.scalatest.{MustMatchers, WordSpec}
-
-import scala.io.Source
 
 class Day02Spec extends WordSpec with MustMatchers {
   private val testInstance = new Day02()
@@ -47,7 +47,7 @@ class Day02Spec extends WordSpec with MustMatchers {
     }
 
     "return 6888 for day02 input" in {
-      val ids = Source.fromResource("2018/day02/input.txt").getLines().toSeq
+      val ids = readLines("2018/day02/input.txt")
 
       testInstance.checksum(ids) mustBe 6888
     }
@@ -67,7 +67,7 @@ class Day02Spec extends WordSpec with MustMatchers {
     }
 
     "match ids" in {
-      val ids = Source.fromResource("2018/day02/input.txt").getLines().toSeq
+      val ids = readLines("2018/day02/input.txt")
 
       testInstance.firstSimilar(ids) mustBe Some("icxjvbrobtunlelzpdmfkahgs")
     }

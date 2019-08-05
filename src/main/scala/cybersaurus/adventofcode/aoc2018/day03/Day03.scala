@@ -1,6 +1,6 @@
-package cybersaurus.adventofcode.aoc2018
+package cybersaurus.adventofcode.aoc2018.day03
 
-import cybersaurus.adventofcode.aoc2018.domain.{Area, Claim, Coord}
+import cybersaurus.adventofcode.aoc2018.day03.domain.{Area, Claim, Coord}
 
 package object domain {
   type Coord = (Int,Int)
