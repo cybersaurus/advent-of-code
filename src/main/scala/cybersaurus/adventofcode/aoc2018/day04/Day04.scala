@@ -4,9 +4,6 @@ import java.time.LocalDateTime
 import java.time.LocalDateTime.parse
 import java.time.format.DateTimeFormatter
 
-import scala.collection.immutable.Map
-import scala.collection.mutable.Buffer
-
 
 sealed trait GuardEvent {
   val at: LocalDateTime
@@ -14,9 +11,9 @@ sealed trait GuardEvent {
 object GuardEvent {
   private val dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
-  private val shiftStarts = """^\[([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2})\] Guard #([0-9]{1,4}) begins shift$""".r
-  private val fallsAsleep = """^\[([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2})\] falls asleep$""".r
-  private val wakesUp     = """^\[([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2})\] wakes up$""".r
+  private val shiftStarts = """^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2})\] Guard #(\d{1,4}) begins shift$""".r
+  private val fallsAsleep = """^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2})\] falls asleep$""".r
+  private val wakesUp     = """^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2})\] wakes up$""".r
 
 
   def apply(event: String): GuardEvent = {
@@ -31,9 +28,9 @@ object GuardEvent {
 
   def parseEvents(events: Seq[String]): Seq[GuardEvent] = events map apply
 }
-case class StartsShift(override val at: LocalDateTime, guardId: Int) extends GuardEvent
-case class FallsAsleep(override val at: LocalDateTime) extends GuardEvent
-case class WakesUp(override val at: LocalDateTime) extends GuardEvent
+case class StartsShift(at: LocalDateTime, guardId: Int) extends GuardEvent
+case class FallsAsleep(at: LocalDateTime) extends GuardEvent
+case class WakesUp(at: LocalDateTime) extends GuardEvent
 
 case class SleepPeriod(start: LocalDateTime, end: LocalDateTime) {
   lazy val minutes: Seq[Int] = start.getMinute until end.getMinute
@@ -49,16 +46,13 @@ object SleepPeriod {
 
 trait Day04 {
   def groupedByStartsShift(events: Seq[GuardEvent]): Seq[(StartsShift, Seq[SleepPeriod])] = {
-    val empty = (Seq.empty[(StartsShift, Buffer[GuardEvent])])
+    val empty = (Seq.empty[(StartsShift, Seq[GuardEvent])])
 
     events
       .sorted(Day04.guardEventOrdering)
-      .foldLeft(empty) { case (acc,ge) =>
-        ge match {
-          case ss: StartsShift => acc :+ (ss, Buffer.empty[GuardEvent])
-          case  _: FallsAsleep |
-                _: WakesUp     => acc.last._2 += ge; acc
-        }
+      .foldLeft(empty) {
+        case (acc, ss: StartsShift)           => acc :+ (ss, Seq.empty[GuardEvent])
+        case (init :+ ((ss, events)) , event) => init :+ (ss, events :+ event)
       }
       .map { case (ss, ges) => (ss, SleepPeriod.createSleepPeriods(ges)) }
   }
@@ -70,17 +64,23 @@ trait Day04 {
       .mapValues { seq => seq.flatMap { case (_,sps) => sps } }
   }
 
-  def guardAsleepMost(sleepPeriodsByGuard: Map[Int, Seq[SleepPeriod]]): Int =
-    sleepPeriodsByGuard
-      .maxBy { case (_,sps) => sps.map {_.length}.sum }
-      ._1
+  def guardAsleepMost(sleepPeriodsByGuard: Map[Int, Seq[SleepPeriod]]): Int = {
+    val (guardId,_) =
+      sleepPeriodsByGuard
+        .maxBy { case (_, sps) => sps.map { _.length }.sum }
 
-  def minuteAsleepMost(sleepPeriods: Seq[SleepPeriod]): Int =
-    sleepPeriods
-      .flatMap{_.minutes}
-      .groupBy(identity)
-      .maxBy{ case (_, occurrences) => occurrences.size }
-      ._1
+    guardId
+  }
+
+  def minuteAsleepMost(sleepPeriods: Seq[SleepPeriod]): Int = {
+    val (minute,_) =
+      sleepPeriods
+        .flatMap{_.minutes}
+        .groupBy(identity)
+        .maxBy{ case (_, occurrences) => occurrences.size }
+
+    minute
+  }
 
   // Part 2
   def mostFrequentMinuteByGuardId(sleepPeriodsByGuard: Map[Int, Seq[SleepPeriod]]): Map[Int, (Int,Int)] = {
